@@ -9,7 +9,7 @@ This package provides an NPX-compatible wrapper for Microsoft's [markitdown-mcp]
 
 ## ✨ Features
 
-- 🚀 **No Docker Required**: Run directly with NPX
+- 🚀 **No Docker Required**: Run directly with "node"
 - 🔧 **Automatic Setup**: Handles Python environment and dependencies automatically
 - 🔄 **Full Compatibility**: Works exactly like the original Docker version
 - 💻 **Cross-Platform**: Works on Windows, macOS, and Linux
@@ -18,7 +18,7 @@ This package provides an NPX-compatible wrapper for Microsoft's [markitdown-mcp]
 ## 📋 Prerequisites
 
 ### Required
-- **Node.js 16+**: Required for NPX execution
+- **Node.js 16+**: Required for running the local script
 - **Python 3.10+**: Required for MarkItDown functionality
 - **Internet Connection**: For initial package installation
 
@@ -32,17 +32,25 @@ This package provides an NPX-compatible wrapper for Microsoft's [markitdown-mcp]
 
 ## 🚀 Quick Start
 
-### Using NPX (Recommended)
+### Using Local Installation (Recommended)
 
 ```bash
-# Run directly with NPX (no installation required)
-npx markitdown-mcp-npx
+# Run directly with node (no installation required after setup)
+node C:\Users\YOUR_USERNAME\MCP\markitdown-mcp-npx\bin\markitdown-mcp-npx.js
 
 # Run with HTTP transport
-npx markitdown-mcp-npx --http --host 127.0.0.1 --port 3001
+node C:\Users\YOUR_USERNAME\MCP\markitdown-mcp-npx\bin\markitdown-mcp-npx.js --http --host 127.0.0.1 --port 3001
 
 # Run with specific arguments
-npx markitdown-mcp-npx --help
+node C:\Users\YOUR_USERNAME\MCP\markitdown-mcp-npx\bin\markitdown-mcp-npx.js --help
+```
+
+### Future NPX Usage (if published to NPM)
+
+```bash
+# Once published to NPM, you could use:
+npx markitdown-mcp-npx
+npx markitdown-mcp-npx --http --host 127.0.0.1 --port 3001
 ```
 
 ### Local Installation
@@ -61,7 +69,7 @@ npm start
 
 ## 🔧 Configuration for Claude Desktop
 
-The NPX version can be used as a drop-in replacement for the Docker version in Claude Desktop.
+The local version can be used as a drop-in replacement for the Docker version in Claude Desktop.
 
 ### Claude Desktop Configuration
 
@@ -114,10 +122,10 @@ The NPX version can be used as a drop-in replacement for the Docker version in C
 
 ### Comparison with Docker Version
 
-| Feature | Docker Version | NPX Version |
-|---------|----------------|-------------|
+| Feature | Docker Version | Local Node Version |
+|---------|----------------|--------------------|
 | **Setup** | Requires Docker | Requires Node.js + Python |
-| **Command** | `docker run ...` | `npx markitdown-mcp-npx` |
+| **Command** | `docker run ...` | `node path/to/markitdown-mcp-npx.js` |
 | **Dependencies** | Isolated in container | Managed in virtual environment |
 | **Performance** | Container overhead | Direct execution |
 | **File Access** | Requires volume mounts | Direct file system access |
@@ -126,17 +134,17 @@ The NPX version can be used as a drop-in replacement for the Docker version in C
 
 ### Basic STDIO Mode (Default)
 ```bash
-npx markitdown-mcp-npx
+node C:\Users\YOUR_USERNAME\MCP\markitdown-mcp-npx\bin\markitdown-mcp-npx.js
 ```
 
 ### HTTP/SSE Mode
 ```bash
-npx markitdown-mcp-npx --http --host 127.0.0.1 --port 3001
+node C:\Users\YOUR_USERNAME\MCP\markitdown-mcp-npx\bin\markitdown-mcp-npx.js --http --host 127.0.0.1 --port 3001
 ```
 
 ### With Custom Host/Port
 ```bash
-npx markitdown-mcp-npx --http --host 0.0.0.0 --port 8080
+node C:\Users\YOUR_USERNAME\MCP\markitdown-mcp-npx\bin\markitdown-mcp-npx.js --http --host 0.0.0.0 --port 8080
 ```
 
 ## 🛠️ Available Options
@@ -196,7 +204,8 @@ npx @modelcontextprotocol/inspector
 
 # For STDIO mode:
 # - Transport: STDIO
-# - Command: npx markitdown-mcp-npx
+# - Command: node
+# - Args: C:\Users\YOUR_USERNAME\MCP\markitdown-mcp-npx\bin\markitdown-mcp-npx.js
 
 # For HTTP mode:
 # - Transport: Streamable HTTP
@@ -210,7 +219,7 @@ markitdown-mcp-npx/
 ├── package.json              # NPM package configuration
 ├── index.js                  # Main entry point
 ├── bin/
-│   └── markitdown-mcp-npx.js # NPX binary script
+│   └── markitdown-mcp-npx.js # Node.js executable script
 └── README.md                 # This file
 ```
 
@@ -223,7 +232,7 @@ markitdown-mcp-npx/
 
 ## 🆚 vs. Docker Version
 
-### Advantages of NPX Version:
+### Advantages of Local Node Version:
 - ✅ No Docker installation required
 - ✅ Direct file system access (no volume mounts)
 - ✅ Faster startup (no container overhead)
@@ -294,7 +303,7 @@ Error: Port 3001 already in use
 
 This is an unofficial wrapper for Microsoft's MarkItDown MCP server. For issues with the core MarkItDown functionality, please refer to the [original repository](https://github.com/microsoft/markitdown).
 
-For issues specific to this NPX wrapper:
+For issues specific to this wrapper:
 1. Check the troubleshooting section
 2. Verify your Python and Node.js installations
 3. Test with the MCP Inspector
@@ -307,4 +316,4 @@ For issues specific to this NPX wrapper:
 
 ---
 
-**Note**: This is an unofficial NPX wrapper. For the official Docker version, visit the [original repository](https://github.com/microsoft/markitdown/tree/main/packages/markitdown-mcp).
+**Note**: This is an unofficial wrapper for MarkItDown MCP. For the official Docker version, visit the [original repository](https://github.com/microsoft/markitdown/tree/main/packages/markitdown-mcp).
