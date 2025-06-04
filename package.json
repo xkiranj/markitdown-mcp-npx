@@ -1,0 +1,54 @@
+{
+  "name": "markitdown-mcp-npx",
+  "version": "1.0.0",
+  "description": "NPX wrapper for Microsoft's MarkItDown MCP server - run without Docker. Provides the same file conversion capabilities (PDF, Word, Excel, images, etc.) as the original Docker version but with easier setup and direct file system access.",
+  "main": "index.js",
+  "bin": {
+    "markitdown-mcp-npx": "./bin/markitdown-mcp-npx.js"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "test": "node test.js",
+    "validate": "node test.js"
+  },
+  "keywords": [
+    "markitdown",
+    "mcp",
+    "markdown",
+    "converter",
+    "microsoft",
+    "npx",
+    "claude",
+    "llm"
+  ],
+  "author": "ekirjad (Based on Microsoft's markitdown-mcp)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YOUR_USERNAME/markitdown-mcp-npx.git"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "preferGlobal": false,
+  "dependencies": {
+    "child_process": "*",
+    "fs": "*",
+    "path": "*",
+    "os": "*"
+  },
+  "peerDependencies": {},
+  "devDependencies": {},
+  "files": [
+    "index.js",
+    "bin/",
+    "README.md",
+    "TESTING.md",
+    "test.js",
+    "LICENSE"
+  ],
+  "homepage": "https://github.com/YOUR_USERNAME/markitdown-mcp-npx#readme",
+  "bugs": {
+    "url": "https://github.com/YOUR_USERNAME/markitdown-mcp-npx/issues"
+  }
+}

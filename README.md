@@ -1,0 +1,237 @@
+# MarkItDown-MCP-NPX
+
+[![npm version](https://img.shields.io/npm/v/markitdown-mcp-npx.svg)](https://www.npmjs.com/package/markitdown-mcp-npx)
+[![Built for AutoGen](https://img.shields.io/badge/Built%20for-AutoGen-blue)](https://github.com/microsoft/autogen)
+
+**NPX wrapper for Microsoft's MarkItDown MCP server - No Docker Required!**
+
+This package provides an NPX-compatible wrapper for Microsoft's [markitdown-mcp](https://github.com/microsoft/markitdown/tree/main/packages/markitdown-mcp), allowing you to run the MarkItDown MCP server without Docker dependencies.
+
+## ✨ Features
+
+- 🚀 **No Docker Required**: Run directly with NPX
+- 🔧 **Automatic Setup**: Handles Python environment and dependencies automatically
+- 🔄 **Full Compatibility**: Works exactly like the original Docker version
+- 💻 **Cross-Platform**: Works on Windows, macOS, and Linux
+- ⚡ **Fast**: Reuses virtual environment after first setup
+
+## 📋 Prerequisites
+
+- **Node.js 16+**: Required for NPX execution
+- **Python 3.10+**: Required for MarkItDown functionality
+- **Internet Connection**: For initial package installation
+
+## 🚀 Quick Start
+
+### Using NPX (Recommended)
+
+```bash
+# Run directly with NPX (no installation required)
+npx markitdown-mcp-npx
+
+# Run with HTTP transport
+npx markitdown-mcp-npx --http --host 127.0.0.1 --port 3001
+
+# Run with specific arguments
+npx markitdown-mcp-npx --help
+```
+
+### Local Installation
+
+```bash
+# Clone or download this package
+git clone <this-repo-url>
+cd markitdown-mcp-npx
+
+# Install dependencies
+npm install
+
+# Run locally
+npm start
+```
+
+## 🔧 Configuration for Claude Desktop
+
+The NPX version can be used as a drop-in replacement for the Docker version in Claude Desktop.
+
+### Claude Desktop Configuration
+
+Edit your `claude_desktop_config.json` file:
+
+**For NPX version:**
+```json
+{
+  "mcpServers": {
+    "markitdown": {
+      "command": "npx",
+      "args": [
+        "markitdown-mcp-npx"
+      ]
+    }
+  }
+}
+```
+
+**For NPX version with HTTP transport:**
+```json
+{
+  "mcpServers": {
+    "markitdown": {
+      "command": "npx",
+      "args": [
+        "markitdown-mcp-npx",
+        "--http",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "3001"
+      ]
+    }
+  }
+}
+```
+
+### Comparison with Docker Version
+
+| Feature | Docker Version | NPX Version |
+|---------|----------------|-------------|
+| **Setup** | Requires Docker | Requires Node.js + Python |
+| **Command** | `docker run ...` | `npx markitdown-mcp-npx` |
+| **Dependencies** | Isolated in container | Managed in virtual environment |
+| **Performance** | Container overhead | Direct execution |
+| **File Access** | Requires volume mounts | Direct file system access |
+
+## 📖 Usage Examples
+
+### Basic STDIO Mode (Default)
+```bash
+npx markitdown-mcp-npx
+```
+
+### HTTP/SSE Mode
+```bash
+npx markitdown-mcp-npx --http --host 127.0.0.1 --port 3001
+```
+
+### With Custom Host/Port
+```bash
+npx markitdown-mcp-npx --http --host 0.0.0.0 --port 8080
+```
+
+## 🛠️ Available Options
+
+```
+Usage: markitdown-mcp-npx [options]
+
+Options:
+  --http           Run with Streamable HTTP and SSE transport (default: STDIO)
+  --sse            Alias for --http (deprecated)
+  --host HOST      Host to bind to (default: 127.0.0.1)
+  --port PORT      Port to listen on (default: 3001)
+  --help           Show help message
+```
+
+## 🔍 How It Works
+
+1. **Environment Detection**: Automatically detects Python 3.10+ installation
+2. **Virtual Environment**: Creates isolated Python environment in temp directory
+3. **Package Installation**: Installs `markitdown-mcp` and dependencies
+4. **Process Management**: Spawns and manages the Python MCP server process
+5. **Signal Handling**: Properly handles termination signals
+
+## 🐛 Troubleshooting
+
+### Python Not Found
+```
+Error: Python 3.10+ is required but not found
+```
+**Solution**: Install Python 3.10+ and ensure it's in your PATH
+
+### Permission Errors
+```
+Error: Failed to create virtual environment
+```
+**Solution**: Check write permissions to your temp directory
+
+### Installation Failures
+```
+Error: Failed to install markitdown-mcp
+```
+**Solution**: Check internet connectivity and proxy settings
+
+### Port Already in Use
+```
+Error: Port 3001 already in use
+```
+**Solution**: Use a different port with `--port <number>`
+
+## 🧪 Testing with MCP Inspector
+
+You can test the server using the MCP Inspector:
+
+```bash
+# Start the inspector
+npx @modelcontextprotocol/inspector
+
+# For STDIO mode:
+# - Transport: STDIO
+# - Command: npx markitdown-mcp-npx
+
+# For HTTP mode:
+# - Transport: Streamable HTTP
+# - URL: http://127.0.0.1:3001/mcp
+```
+
+## 📂 File Structure
+
+```
+markitdown-mcp-npx/
+├── package.json              # NPM package configuration
+├── index.js                  # Main entry point
+├── bin/
+│   └── markitdown-mcp-npx.js # NPX binary script
+└── README.md                 # This file
+```
+
+## 🔐 Security Considerations
+
+- The server runs with the same privileges as the user executing it
+- No authentication is provided for HTTP/SSE modes
+- For HTTP mode, bind to `localhost` unless specifically needed otherwise
+- Virtual environments provide isolation for Python dependencies
+
+## 🆚 vs. Docker Version
+
+### Advantages of NPX Version:
+- ✅ No Docker installation required
+- ✅ Direct file system access (no volume mounts)
+- ✅ Faster startup (no container overhead)
+- ✅ Easier to debug and troubleshoot
+
+### Advantages of Docker Version:
+- ✅ Complete isolation
+- ✅ Consistent environment across systems
+- ✅ No Python installation required on host
+
+## 📄 License
+
+This project follows the same MIT license as the original [markitdown](https://github.com/microsoft/markitdown) project.
+
+## 🤝 Contributing
+
+This is an unofficial wrapper for Microsoft's MarkItDown MCP server. For issues with the core MarkItDown functionality, please refer to the [original repository](https://github.com/microsoft/markitdown).
+
+For issues specific to this NPX wrapper:
+1. Check the troubleshooting section
+2. Verify your Python and Node.js installations
+3. Test with the MCP Inspector
+
+## 🙏 Acknowledgments
+
+- **Microsoft AutoGen Team**: For creating the original MarkItDown and MCP server
+- **Model Context Protocol**: For the MCP specification
+- **Claude Desktop**: For MCP integration
+
+---
+
+**Note**: This is an unofficial NPX wrapper. For the official Docker version, visit the [original repository](https://github.com/microsoft/markitdown/tree/main/packages/markitdown-mcp).

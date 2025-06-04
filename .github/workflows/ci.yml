@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node-version: [16.x, 18.x, 20.x]
+        python-version: ['3.10', '3.11', '3.12']
+        
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        
+    - name: Install Node.js dependencies
+      run: npm ci --ignore-scripts
+      
+    - name: Run tests
+      run: npm test
+      
+    - name: Test help command
+      run: node bin/markitdown-mcp-npx.js --help
+      
+    - name: Test package structure
+      run: |
+        test -f package.json
+        test -f README.md
+        test -f LICENSE
+        test -f bin/markitdown-mcp-npx.js
+        test -f index.js
+      shell: bash
+
+  lint:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18.x'
+        
+    - name: Check package.json validity
+      run: npm pkg validate
+      
+    - name: Check for security vulnerabilities
+      run: npm audit --audit-level high
+      continue-on-error: true

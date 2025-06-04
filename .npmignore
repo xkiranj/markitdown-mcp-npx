@@ -1,0 +1,43 @@
+# Files to exclude from NPM package
+
+# Development files
+test.js
+.gitignore
+.npmignore
+CONTRIBUTING.md
+SETUP_COMPLETE.md
+
+# Git files
+.git/
+.gitignore
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Coverage
+coverage/
+.nyc_output
+
+# Node modules (shouldn't be included anyway)
+node_modules/
+
+# Temporary files
+tmp/
+temp/
