@@ -70,9 +70,23 @@ jobs:
         node-version: '18.x'
         
     - name: Check package.json validity
-      run: npm pkg validate
+      run: |
+        # Check if package.json is valid JSON
+        node -e "JSON.parse(require('fs').readFileSync('package.json', 'utf8')); console.log('✅ package.json is valid JSON');"
+        
+        # Check required fields
+        node -e "
+          const pkg = JSON.parse(require('fs').readFileSync('package.json', 'utf8'));
+          const required = ['name', 'version', 'description', 'main', 'bin', 'license'];
+          const missing = required.filter(field => !pkg[field]);
+          if (missing.length > 0) {
+            console.error('❌ Missing required fields:', missing.join(', '));
+            process.exit(1);
+          }
+          console.log('✅ All required package.json fields present');
+        "
       
     - name: Verify no actual dependencies needed
       run: |
         echo "✅ Package uses only Node.js built-in modules"
-        node -e "console.log('Node.js version:', process.version)"
+        node -e "console.log('✅ Node.js version:', process.version)"
