@@ -25,7 +25,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/YOUR_USERNAME/markitdown-mcp-npx.git"
+    "url": "https://github.com/xkiranj/markitdown-mcp-npx.git"
   },
   "engines": {
     "node": ">=16.0.0"
@@ -47,8 +47,8 @@
     "test.js",
     "LICENSE"
   ],
-  "homepage": "https://github.com/YOUR_USERNAME/markitdown-mcp-npx#readme",
+  "homepage": "https://github.com/xkiranj/markitdown-mcp-npx#readme",
   "bugs": {
-    "url": "https://github.com/YOUR_USERNAME/markitdown-mcp-npx/issues"
+    "url": "https://github.com/xkiranj/markitdown-mcp-npx/issues"
   }
 }
