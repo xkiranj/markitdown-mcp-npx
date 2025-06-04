@@ -65,9 +65,21 @@ The NPX version can be used as a drop-in replacement for the Docker version in C
 
 ### Claude Desktop Configuration
 
-Edit your `claude_desktop_config.json` file:
+**For Local Installation:**
+```json
+{
+  "mcpServers": {
+    "markitdown": {
+      "command": "node",
+      "args": [
+        "C:\\Users\\YOUR_USERNAME\\MCP\\markitdown-mcp-npx\\bin\\markitdown-mcp-npx.js"
+      ]
+    }
+  }
+}
+```
 
-**For NPX version:**
+**For NPX version (if published to NPM):**
 ```json
 {
   "mcpServers": {
@@ -81,14 +93,14 @@ Edit your `claude_desktop_config.json` file:
 }
 ```
 
-**For NPX version with HTTP transport:**
+**For HTTP transport:**
 ```json
 {
   "mcpServers": {
     "markitdown": {
-      "command": "npx",
+      "command": "node",
       "args": [
-        "markitdown-mcp-npx",
+        "C:\\Users\\YOUR_USERNAME\\MCP\\markitdown-mcp-npx\\bin\\markitdown-mcp-npx.js",
         "--http",
         "--host",
         "127.0.0.1",
@@ -225,6 +237,21 @@ markitdown-mcp-npx/
 ## 📄 License
 
 This project follows the same MIT license as the original [markitdown](https://github.com/microsoft/markitdown) project.
+
+## 🔧 Expected Tool Behavior
+
+**✓ Single Tool**: MarkItDown MCP provides exactly **1 tool** called `convert_to_markdown`  
+**✓ Universal Converter**: This one tool handles **all file types**:  
+- 📄 Documents: PDF, Word (.docx), Excel (.xlsx), PowerPoint (.pptx)  
+- 🖼️ Images: JPG, PNG, GIF, etc. (with OCR support)  
+- 🎧 Audio: MP3, WAV (with transcription if FFmpeg installed)  
+- 🌐 Web: HTTP/HTTPS URLs  
+- 🗃️ Archives: ZIP files  
+- 📊 Data: CSV, JSON, XML  
+
+**✓ URI Parameter**: Accepts `http:`, `https:`, `file:`, or `data:` URIs
+
+> 💡 **Note**: Seeing "1 tools available" in Claude Desktop is **correct behavior**!
 
 ## 🚫 Troubleshooting
 
