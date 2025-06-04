@@ -31,12 +31,7 @@
     "node": ">=16.0.0"
   },
   "preferGlobal": false,
-  "dependencies": {
-    "child_process": "*",
-    "fs": "*",
-    "path": "*",
-    "os": "*"
-  },
+  "dependencies": {},
   "peerDependencies": {},
   "devDependencies": {},
   "files": [
