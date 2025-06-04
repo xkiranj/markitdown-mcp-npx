@@ -19,6 +19,30 @@ class MarkItDownMCPRunner {
     }
 
     /**
+     * Log message only if not in STDIO mode (to avoid interfering with MCP communication)
+     */
+    log(message, forceLog = false) {
+        const args = process.argv.slice(2);
+        const isHttpMode = args.includes('--http') || args.includes('--sse') || args.includes('--help') || args.includes('-h');
+        
+        if (isHttpMode || forceLog) {
+            console.log(message);
+        }
+    }
+
+    /**
+     * Log error message
+     */
+    logError(message, forceLog = false) {
+        const args = process.argv.slice(2);
+        const isHttpMode = args.includes('--http') || args.includes('--sse') || args.includes('--help') || args.includes('-h');
+        
+        if (isHttpMode || forceLog) {
+            console.error(message);
+        }
+    }
+
+    /**
      * Check for optional system dependencies
      */
     checkOptionalDependencies() {
@@ -27,7 +51,7 @@ class MarkItDownMCPRunner {
         // Check for ffmpeg (needed for audio file processing)
         try {
             require('child_process').execSync('ffmpeg -version', { stdio: 'pipe' });
-            console.log('✓ ffmpeg found - audio file processing available');
+            this.log('✓ ffmpeg found - audio file processing available');
         } catch (error) {
             warnings.push('⚠️  ffmpeg not found - audio file processing will be limited');
             warnings.push('   Install: https://ffmpeg.org/download.html');
@@ -36,21 +60,21 @@ class MarkItDownMCPRunner {
         // Check for exiftool (needed for advanced image metadata)
         try {
             require('child_process').execSync('exiftool -ver', { stdio: 'pipe' });
-            console.log('✓ exiftool found - advanced image metadata available');
+            this.log('✓ exiftool found - advanced image metadata available');
         } catch (error) {
             warnings.push('⚠️  exiftool not found - some image metadata features limited');
             warnings.push('   Install: https://exiftool.org/');
         }
         
         if (warnings.length > 0) {
-            console.log('');
-            console.log('📋 Optional Dependencies:');
-            warnings.forEach(warning => console.log(warning));
-            console.log('');
-            console.log('💡 These are optional - MarkItDown will work without them');
-            console.log('   Most file types (PDF, Word, Excel, images) work fine without these tools');
-            console.log('   Only needed for: audio files (.mp3, .wav) and advanced image metadata');
-            console.log('');
+            this.log('');
+            this.log('📋 Optional Dependencies:');
+            warnings.forEach(warning => this.log(warning));
+            this.log('');
+            this.log('💡 These are optional - MarkItDown will work without them');
+            this.log('   Most file types (PDF, Word, Excel, images) work fine without these tools');
+            this.log('   Only needed for: audio files (.mp3, .wav) and advanced image metadata');
+            this.log('');
         }
     }
 
@@ -58,7 +82,7 @@ class MarkItDownMCPRunner {
      * Detect available Python command
      */
     detectPython() {
-        const pythonCmds = ['python3', 'python'];
+        const pythonCmds = ['python', 'python3'];
         
         for (const cmd of pythonCmds) {
             try {
@@ -67,7 +91,7 @@ class MarkItDownMCPRunner {
                     stdio: 'pipe' 
                 });
                 if (result.includes('Python 3.')) {
-                    console.log(`✓ Found Python: ${cmd}`);
+                    this.log(`✓ Found Python: ${cmd}`);
                     return cmd;
                 }
             } catch (error) {
@@ -137,7 +161,7 @@ class MarkItDownMCPRunner {
      * Create virtual environment
      */
     async createVenv() {
-        console.log('📦 Creating Python virtual environment...');
+        this.log('📦 Creating Python virtual environment...');
         
         if (!fs.existsSync(this.tempDir)) {
             fs.mkdirSync(this.tempDir, { recursive: true });
@@ -150,7 +174,7 @@ class MarkItDownMCPRunner {
 
             venvProcess.on('exit', (code) => {
                 if (code === 0) {
-                    console.log('✓ Virtual environment created');
+                    this.log('✓ Virtual environment created');
                     resolve();
                 } else {
                     reject(new Error(`Failed to create virtual environment (exit code: ${code})`));
@@ -167,7 +191,7 @@ class MarkItDownMCPRunner {
      * Install markitdown-mcp in virtual environment
      */
     async installMarkItDown() {
-        console.log('📥 Installing markitdown-mcp...');
+        this.log('📥 Installing markitdown-mcp...');
         
         const venvPython = this.getVenvPython();
         
@@ -178,7 +202,7 @@ class MarkItDownMCPRunner {
 
             installProcess.on('exit', (code) => {
                 if (code === 0) {
-                    console.log('✓ markitdown-mcp installed successfully');
+                    this.log('✓ markitdown-mcp installed successfully');
                     resolve();
                 } else {
                     reject(new Error(`Failed to install markitdown-mcp (exit code: ${code})`));
@@ -196,37 +220,51 @@ class MarkItDownMCPRunner {
      */
     async runMarkItDown(args) {
         const venvPython = this.getVenvPython();
+        const isHttpMode = args.includes('--http') || args.includes('--sse');
         
-        console.log('🚀 Starting MarkItDown MCP server...');
+        // Only show debug info in HTTP mode to avoid interfering with STDIO MCP communication
+        if (isHttpMode) {
+            this.log('🚀 Starting MarkItDown MCP server...');
+            this.log(`🔍 Debug: Python path: ${venvPython}`);
+            this.log(`🔍 Debug: Args: ${JSON.stringify(args)}`);
+            this.log(`🔍 Debug: Full command: ${venvPython} -m markitdown_mcp ${args.join(' ')}`);
+        }
+        
+        // Verify the Python executable exists
+        if (!fs.existsSync(venvPython)) {
+            throw new Error(`Python executable not found at: ${venvPython}`);
+        }
         
         // Spawn the markitdown-mcp process
+        // In STDIO mode, we need completely transparent communication
         const mcpProcess = spawn(venvPython, ['-m', 'markitdown_mcp'].concat(args), {
             stdio: 'inherit'
         });
 
-        // Handle process events
+        // Handle process events (silently in STDIO mode)
         mcpProcess.on('error', (error) => {
-            console.error(`❌ Error starting MCP server: ${error.message}`);
+            this.logError(`❌ Error starting MCP server: ${error.message}`, true);
             process.exit(1);
         });
 
         mcpProcess.on('exit', (code, signal) => {
-            if (signal) {
-                console.log(`🔄 MCP server terminated by signal: ${signal}`);
-            } else if (code !== 0) {
-                console.error(`❌ MCP server exited with code: ${code}`);
+            // In STDIO mode, exit silently
+            if (isHttpMode) {
+                if (signal) {
+                    this.log(`🔄 MCP server terminated by signal: ${signal}`);
+                } else if (code !== 0) {
+                    this.logError(`❌ MCP server exited with code: ${code}`);
+                }
             }
             process.exit(code || 0);
         });
 
         // Handle termination signals
         process.on('SIGINT', () => {
-            console.log('\\n🛑 Received SIGINT, shutting down...');
             mcpProcess.kill('SIGINT');
         });
 
         process.on('SIGTERM', () => {
-            console.log('\\n🛑 Received SIGTERM, shutting down...');
             mcpProcess.kill('SIGTERM');
         });
     }
@@ -236,29 +274,33 @@ class MarkItDownMCPRunner {
      */
     async run() {
         try {
-            console.log('🔍 MarkItDown MCP NPX Wrapper');
-            console.log('================================');
-            
-            // Parse command line arguments
             const args = process.argv.slice(2);
+            const isSetupMode = args.includes('--help') || args.includes('-h') || 
+                               !(await this.checkVenvExists());
+            
+            // Only show header during setup or help
+            if (isSetupMode) {
+                this.log('🔍 MarkItDown MCP NPX Wrapper', true);
+                this.log('================================', true);
+            }
             
             // Handle --help quickly without setup
             if (args.includes('--help') || args.includes('-h')) {
-                console.log('MarkItDown MCP NPX Wrapper');
-                console.log('');
-                console.log('Usage: markitdown-mcp-npx [options]');
-                console.log('');
-                console.log('Options:');
-                console.log('  --http           Run with Streamable HTTP and SSE transport (default: STDIO)');
-                console.log('  --sse            Alias for --http (deprecated)');
-                console.log('  --host HOST      Host to bind to (default: 127.0.0.1)');
-                console.log('  --port PORT      Port to listen on (default: 3001)');
-                console.log('  --help, -h       Show this help message');
-                console.log('');
-                console.log('Examples:');
-                console.log('  markitdown-mcp-npx                                # STDIO mode');
-                console.log('  markitdown-mcp-npx --http                         # HTTP mode');
-                console.log('  markitdown-mcp-npx --http --host 0.0.0.0 --port 8080  # Custom host/port');
+                this.log('MarkItDown MCP NPX Wrapper', true);
+                this.log('', true);
+                this.log('Usage: markitdown-mcp-npx [options]', true);
+                this.log('', true);
+                this.log('Options:', true);
+                this.log('  --http           Run with Streamable HTTP and SSE transport (default: STDIO)', true);
+                this.log('  --sse            Alias for --http (deprecated)', true);
+                this.log('  --host HOST      Host to bind to (default: 127.0.0.1)', true);
+                this.log('  --port PORT      Port to listen on (default: 3001)', true);
+                this.log('  --help, -h       Show this help message', true);
+                this.log('', true);
+                this.log('Examples:', true);
+                this.log('  markitdown-mcp-npx                                # STDIO mode', true);
+                this.log('  markitdown-mcp-npx --http                         # HTTP mode', true);
+                this.log('  markitdown-mcp-npx --http --host 0.0.0.0 --port 8080  # Custom host/port', true);
                 return;
             }
             
@@ -266,13 +308,13 @@ class MarkItDownMCPRunner {
             const venvReady = await this.checkVenvExists();
             
             if (!venvReady) {
-                console.log('⚙️  Setting up MarkItDown MCP environment...');
+                this.log('⚙️  Setting up MarkItDown MCP environment...', true);
                 await this.createVenv();
                 await this.installMarkItDown();
-                console.log('✅ Environment setup complete!');
-                console.log('');
+                this.log('✅ Environment setup complete!', true);
+                this.log('', true);
             } else {
-                console.log('✓ Environment already set up');
+                this.log('✓ Environment already set up');
             }
             
             // Check for optional system dependencies
@@ -282,12 +324,12 @@ class MarkItDownMCPRunner {
             await this.runMarkItDown(args);
             
         } catch (error) {
-            console.error(`❌ Error: ${error.message}`);
-            console.error('');
-            console.error('💡 Troubleshooting:');
-            console.error('   1. Ensure Python 3.10+ is installed and available in PATH');
-            console.error('   2. Check internet connectivity for package installation');
-            console.error('   3. Verify write permissions to temporary directory');
+            this.logError(`❌ Error: ${error.message}`, true);
+            this.logError('', true);
+            this.logError('💡 Troubleshooting:', true);
+            this.logError('   1. Ensure Python 3.10+ is installed and available in PATH', true);
+            this.logError('   2. Check internet connectivity for package installation', true);
+            this.logError('   3. Verify write permissions to temporary directory', true);
             process.exit(1);
         }
     }
