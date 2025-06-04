@@ -17,9 +17,18 @@ This package provides an NPX-compatible wrapper for Microsoft's [markitdown-mcp]
 
 ## 📋 Prerequisites
 
+### Required
 - **Node.js 16+**: Required for NPX execution
 - **Python 3.10+**: Required for MarkItDown functionality
 - **Internet Connection**: For initial package installation
+
+### Optional (for enhanced functionality)
+- **FFmpeg**: For audio file processing and transcription (.mp3, .wav files)
+- **ExifTool**: For advanced image metadata extraction
+
+> 💡 **Note**: MarkItDown works perfectly for most file types (PDF, Word, Excel, basic images) without the optional dependencies. They're only needed for audio files and advanced image metadata.
+
+**Windows users**: See [WINDOWS_SETUP.md](./WINDOWS_SETUP.md) for easy installation of optional dependencies.
 
 ## 🚀 Quick Start
 
@@ -216,6 +225,43 @@ markitdown-mcp-npx/
 ## 📄 License
 
 This project follows the same MIT license as the original [markitdown](https://github.com/microsoft/markitdown) project.
+
+## 🚫 Troubleshooting
+
+### FFmpeg Warning
+```
+RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+```
+**This warning is harmless!** It means:
+- ✅ MarkItDown is working correctly
+- ✅ All file types work (PDF, Word, Excel, images)
+- ⚠️ Audio files (.mp3, .wav) processing will be limited
+
+**To resolve**: Install FFmpeg (see [WINDOWS_SETUP.md](./WINDOWS_SETUP.md) for Windows)
+
+### Python Not Found
+```
+Error: Python 3.10+ is required but not found
+```
+**Solution**: Install Python 3.10+ and ensure it's in your PATH
+
+### Permission Errors
+```
+Error: Failed to create virtual environment
+```
+**Solution**: Check write permissions to your temp directory
+
+### Installation Failures
+```
+Error: Failed to install markitdown-mcp
+```
+**Solution**: Check internet connectivity and proxy settings
+
+### Port Already in Use
+```
+Error: Port 3001 already in use
+```
+**Solution**: Use a different port with `--port <number>`
 
 ## 🤝 Contributing
 

@@ -19,6 +19,42 @@ class MarkItDownMCPRunner {
     }
 
     /**
+     * Check for optional system dependencies
+     */
+    checkOptionalDependencies() {
+        const warnings = [];
+        
+        // Check for ffmpeg (needed for audio file processing)
+        try {
+            require('child_process').execSync('ffmpeg -version', { stdio: 'pipe' });
+            console.log('✓ ffmpeg found - audio file processing available');
+        } catch (error) {
+            warnings.push('⚠️  ffmpeg not found - audio file processing will be limited');
+            warnings.push('   Install: https://ffmpeg.org/download.html');
+        }
+        
+        // Check for exiftool (needed for advanced image metadata)
+        try {
+            require('child_process').execSync('exiftool -ver', { stdio: 'pipe' });
+            console.log('✓ exiftool found - advanced image metadata available');
+        } catch (error) {
+            warnings.push('⚠️  exiftool not found - some image metadata features limited');
+            warnings.push('   Install: https://exiftool.org/');
+        }
+        
+        if (warnings.length > 0) {
+            console.log('');
+            console.log('📋 Optional Dependencies:');
+            warnings.forEach(warning => console.log(warning));
+            console.log('');
+            console.log('💡 These are optional - MarkItDown will work without them');
+            console.log('   Most file types (PDF, Word, Excel, images) work fine without these tools');
+            console.log('   Only needed for: audio files (.mp3, .wav) and advanced image metadata');
+            console.log('');
+        }
+    }
+
+    /**
      * Detect available Python command
      */
     detectPython() {
@@ -238,6 +274,9 @@ class MarkItDownMCPRunner {
             } else {
                 console.log('✓ Environment already set up');
             }
+            
+            // Check for optional system dependencies
+            this.checkOptionalDependencies();
             
             // Run markitdown-mcp
             await this.runMarkItDown(args);

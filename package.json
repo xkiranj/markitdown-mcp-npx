@@ -39,6 +39,7 @@
     "bin/",
     "README.md",
     "TESTING.md",
+    "WINDOWS_SETUP.md",
     "test.js",
     "LICENSE"
   ],
