@@ -15,7 +15,7 @@ This package provides an NPX-compatible wrapper for Microsoft's [markitdown-mcp]
 - 🔄 **Full Compatibility**: Works exactly like the original Docker version
 - 💻 **Cross-Platform**: Works on Windows, macOS, and Linux
 - ⚡ **Fast**: Reuses virtual environment after first setup
-- 📦 **Zero Config**: Just run `npx markitdown-mcp-npx` and you're ready!
+- 📦 **Zero Config**: Just run `npx -y markitdown-mcp-npx` and you're ready!
 
 ## 📋 Prerequisites
 
@@ -38,13 +38,13 @@ This package provides an NPX-compatible wrapper for Microsoft's [markitdown-mcp]
 
 ```bash
 # Basic STDIO mode (for Claude Desktop)
-npx markitdown-mcp-npx
+npx -y markitdown-mcp-npx
 
 # HTTP mode for testing
-npx markitdown-mcp-npx --http --host 127.0.0.1 --port 3001
+npx -y markitdown-mcp-npx --http --host 127.0.0.1 --port 3001
 
 # Show help
-npx markitdown-mcp-npx --help
+npx -y markitdown-mcp-npx --help
 ```
 
 ### Alternative Installation Methods
@@ -79,6 +79,7 @@ npm start
     "markitdown": {
       "command": "npx",
       "args": [
+        "-y",
         "markitdown-mcp-npx"
       ]
     }
@@ -93,6 +94,7 @@ npm start
     "markitdown": {
       "command": "npx",
       "args": [
+        "-y",
         "markitdown-mcp-npx",
         "--http",
         "--host",
@@ -117,12 +119,14 @@ npm start
 }
 ```
 
+> 🔑 **Critical**: The `-y` flag is **required** for NPX in Claude Desktop to prevent installation prompts that would cause the server to hang.
+
 ### Comparison with Docker Version
 
 | Feature | Docker Version | NPX Version |
 |---------|----------------|-------------|
 | **Setup** | Requires Docker | Just NPX (comes with Node.js) |
-| **Command** | `docker run ...` | `npx markitdown-mcp-npx` |
+| **Command** | `docker run ...` | `npx -y markitdown-mcp-npx` |
 | **Dependencies** | Isolated in container | Managed in virtual environment |
 | **Performance** | Container overhead | Direct execution |
 | **File Access** | Requires volume mounts | Direct file system access |
@@ -132,23 +136,23 @@ npm start
 
 ### Basic STDIO Mode (Default)
 ```bash
-npx markitdown-mcp-npx
+npx -y markitdown-mcp-npx
 ```
 
 ### HTTP/SSE Mode
 ```bash
-npx markitdown-mcp-npx --http --host 127.0.0.1 --port 3001
+npx -y markitdown-mcp-npx --http --host 127.0.0.1 --port 3001
 ```
 
 ### With Custom Host/Port
 ```bash
-npx markitdown-mcp-npx --http --host 0.0.0.0 --port 8080
+npx -y markitdown-mcp-npx --http --host 0.0.0.0 --port 8080
 ```
 
 ### One-time Setup Verification
 ```bash
 # Test installation and show help
-npx markitdown-mcp-npx --help
+npx -y markitdown-mcp-npx --help
 ```
 
 ## 🛠️ Available Options
@@ -167,12 +171,13 @@ Options:
 ## 🔍 How It Works
 
 1. **NPX Magic**: NPX automatically downloads and runs the latest version
-2. **Environment Detection**: Automatically detects Python 3.10+ installation
-3. **Virtual Environment**: Creates isolated Python environment in temp directory
-4. **Package Installation**: Installs `markitdown-mcp` and dependencies
-5. **Process Management**: Spawns and manages the Python MCP server process
-6. **Signal Handling**: Properly handles termination signals
-7. **Caching**: Reuses the virtual environment for faster subsequent runs
+2. **Auto-confirmation**: The `-y` flag skips installation prompts for seamless startup
+3. **Environment Detection**: Automatically detects Python 3.10+ installation
+4. **Virtual Environment**: Creates isolated Python environment in temp directory
+5. **Package Installation**: Installs `markitdown-mcp` and dependencies
+6. **Process Management**: Spawns and manages the Python MCP server process
+7. **Signal Handling**: Properly handles termination signals
+8. **Caching**: Reuses the virtual environment for faster subsequent runs
 
 ## 🧪 Testing with MCP Inspector
 
@@ -185,10 +190,10 @@ npx @modelcontextprotocol/inspector
 # For STDIO mode:
 # - Transport: STDIO
 # - Command: npx
-# - Args: markitdown-mcp-npx
+# - Args: -y, markitdown-mcp-npx
 
 # For HTTP mode:
-# - Start server: npx markitdown-mcp-npx --http
+# - Start server: npx -y markitdown-mcp-npx --http
 # - Transport: Streamable HTTP
 # - URL: http://127.0.0.1:3001/mcp
 ```
@@ -209,6 +214,13 @@ npx @modelcontextprotocol/inspector
 > 💡 **Note**: Seeing "1 tools available" in Claude Desktop is **correct behavior**!
 
 ## 🐛 Troubleshooting
+
+### Server Hangs on Startup
+```
+Server appears to hang or timeout on startup
+```
+**Solution**: Ensure you're using the `-y` flag: `npx -y markitdown-mcp-npx`  
+**Cause**: Without `-y`, NPX prompts for installation confirmation, which hangs in non-interactive environments like Claude Desktop.
 
 ### Python Not Found
 ```
@@ -238,7 +250,7 @@ Error: Port 3001 already in use
 ```
 Error: Package not found or outdated
 ```
-**Solution**: Clear NPX cache with `npx clear-npx-cache` or use `npx --yes markitdown-mcp-npx`
+**Solution**: Clear NPX cache with `npx clear-npx-cache` or use `npx -y markitdown-mcp-npx`
 
 ### FFmpeg Warning
 ```
@@ -294,10 +306,10 @@ The NPX version automatically uses the latest published version. To check for up
 
 ```bash
 # Clear cache and run latest version
-npx --yes markitdown-mcp-npx
+npx -y markitdown-mcp-npx
 
 # Check current version
-npx markitdown-mcp-npx --help
+npx -y markitdown-mcp-npx --help
 ```
 
 ## 📦 Package Information
@@ -327,6 +339,6 @@ For issues specific to this wrapper:
 
 ---
 
-**✨ Ready to use? Just run: `npx markitdown-mcp-npx`**
+**✨ Ready to use? Just run: `npx -y markitdown-mcp-npx`**
 
 This is an unofficial wrapper for MarkItDown MCP. For the official Docker version, visit the [original repository](https://github.com/microsoft/markitdown/tree/main/packages/markitdown-mcp).
