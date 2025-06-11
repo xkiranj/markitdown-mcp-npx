@@ -4,7 +4,7 @@
   "description": "NPX wrapper for Microsoft's MarkItDown MCP server - run without Docker. Provides the same file conversion capabilities (PDF, Word, Excel, images, etc.) as the original Docker version but with easier setup and direct file system access.",
   "main": "index.js",
   "bin": {
-    "markitdown-mcp-npx": "./bin/markitdown-mcp-npx.js"
+    "markitdown-mcp-npx": "bin/markitdown-mcp-npx.js"
   },
   "scripts": {
     "start": "node index.js",
@@ -25,7 +25,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/xkiranj/markitdown-mcp-npx.git"
+    "url": "git+https://github.com/xkiranj/markitdown-mcp-npx.git"
   },
   "engines": {
     "node": ">=16.0.0"
