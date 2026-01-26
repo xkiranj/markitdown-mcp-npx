@@ -24,7 +24,7 @@ class MarkItDownMCPRunner {
     log(message, forceLog = false) {
         const args = process.argv.slice(2);
         const isHttpMode = args.includes('--http') || args.includes('--sse') || args.includes('--help') || args.includes('-h');
-        
+
         if (isHttpMode || forceLog) {
             console.log(message);
         }
@@ -36,7 +36,7 @@ class MarkItDownMCPRunner {
     logError(message, forceLog = false) {
         const args = process.argv.slice(2);
         const isHttpMode = args.includes('--http') || args.includes('--sse') || args.includes('--help') || args.includes('-h');
-        
+
         if (isHttpMode || forceLog) {
             console.error(message);
         }
@@ -47,7 +47,7 @@ class MarkItDownMCPRunner {
      */
     checkOptionalDependencies() {
         const warnings = [];
-        
+
         // Check for ffmpeg (needed for audio file processing)
         try {
             require('child_process').execSync('ffmpeg -version', { stdio: 'pipe' });
@@ -56,7 +56,7 @@ class MarkItDownMCPRunner {
             warnings.push('⚠️  ffmpeg not found - audio file processing will be limited');
             warnings.push('   Install: https://ffmpeg.org/download.html');
         }
-        
+
         // Check for exiftool (needed for advanced image metadata)
         try {
             require('child_process').execSync('exiftool -ver', { stdio: 'pipe' });
@@ -65,7 +65,7 @@ class MarkItDownMCPRunner {
             warnings.push('⚠️  exiftool not found - some image metadata features limited');
             warnings.push('   Install: https://exiftool.org/');
         }
-        
+
         if (warnings.length > 0) {
             this.log('');
             this.log('📋 Optional Dependencies:');
@@ -79,27 +79,53 @@ class MarkItDownMCPRunner {
     }
 
     /**
-     * Detect available Python command
-     */
+    * Detect available Python command
+    */
     detectPython() {
-        const pythonCmds = ['python', 'python3'];
-        
-        for (const cmd of pythonCmds) {
+        const candidates = [
+            "python3.13",
+            "python3.12",
+            "python3.11",
+            "python3.10",
+            "python3",
+            "python",
+        ];
+
+        for (const cmd of candidates) {
             try {
-                const result = require('child_process').execSync(`${cmd} --version`, { 
-                    encoding: 'utf8', 
-                    stdio: 'pipe' 
-                });
-                if (result.includes('Python 3.')) {
-                    this.log(`✓ Found Python: ${cmd}`);
-                    return cmd;
+                const result = require("child_process").execSync(
+                    `${cmd} --version`,
+                    {
+                        encoding: "utf8",
+                        stdio: "pipe",
+                    },
+                );
+                const versionMatch = result.match(/Python (\d+\.\d+)/);
+
+                if (versionMatch) {
+                    const version = versionMatch[1];
+                    const major = parseInt(version.split(".")[0]);
+                    const minor = parseInt(version.split(".")[1]);
+
+                    if (major === 3 && minor >= 10 && minor <= 13) {
+                        this.log(
+                            `✓ Found compatible Python: ${cmd} (${version})`,
+                        );
+                        return cmd;
+                    }
+
+                    if (major === 3 && minor > 13) {
+                        this.log(
+                            `⚠️  Found unsupported Python: ${cmd} (${version})`,
+                        );
+                    }
                 }
-            } catch (error) {
-                // Continue to next command
-            }
+            } catch (error) {}
         }
-        
-        throw new Error('Python 3.10+ is required but not found. Please install Python and ensure it\'s in your PATH.');
+
+        throw new Error(
+            "Python 3.10-3.13 is required. Python 3.14+ is not supported. Please install Python and ensure it's in your PATH.",
+        );
     }
 
     /**
@@ -132,7 +158,7 @@ class MarkItDownMCPRunner {
             if (!fs.existsSync(this.venvPath)) {
                 return false;
             }
-            
+
             const venvPython = this.getVenvPython();
             if (!fs.existsSync(venvPython)) {
                 return false;
@@ -143,11 +169,11 @@ class MarkItDownMCPRunner {
                 const checkProcess = spawn(venvPython, ['-m', 'pip', 'show', 'markitdown-mcp'], {
                     stdio: 'pipe'
                 });
-                
+
                 checkProcess.on('exit', (code) => {
                     resolve(code === 0);
                 });
-                
+
                 checkProcess.on('error', () => {
                     resolve(false);
                 });
@@ -162,7 +188,7 @@ class MarkItDownMCPRunner {
      */
     async createVenv() {
         this.log('📦 Creating Python virtual environment...');
-        
+
         if (!fs.existsSync(this.tempDir)) {
             fs.mkdirSync(this.tempDir, { recursive: true });
         }
@@ -192,9 +218,9 @@ class MarkItDownMCPRunner {
      */
     async installMarkItDown() {
         this.log('📥 Installing markitdown-mcp...');
-        
+
         const venvPython = this.getVenvPython();
-        
+
         return new Promise((resolve, reject) => {
             const installProcess = spawn(venvPython, ['-m', 'pip', 'install', 'markitdown-mcp'], {
                 stdio: 'inherit'
@@ -221,7 +247,7 @@ class MarkItDownMCPRunner {
     async runMarkItDown(args) {
         const venvPython = this.getVenvPython();
         const isHttpMode = args.includes('--http') || args.includes('--sse');
-        
+
         // Only show debug info in HTTP mode to avoid interfering with STDIO MCP communication
         if (isHttpMode) {
             this.log('🚀 Starting MarkItDown MCP server...');
@@ -229,12 +255,12 @@ class MarkItDownMCPRunner {
             this.log(`🔍 Debug: Args: ${JSON.stringify(args)}`);
             this.log(`🔍 Debug: Full command: ${venvPython} -m markitdown_mcp ${args.join(' ')}`);
         }
-        
+
         // Verify the Python executable exists
         if (!fs.existsSync(venvPython)) {
             throw new Error(`Python executable not found at: ${venvPython}`);
         }
-        
+
         // Spawn the markitdown-mcp process
         // In STDIO mode, we need completely transparent communication
         const mcpProcess = spawn(venvPython, ['-m', 'markitdown_mcp'].concat(args), {
@@ -275,15 +301,15 @@ class MarkItDownMCPRunner {
     async run() {
         try {
             const args = process.argv.slice(2);
-            const isSetupMode = args.includes('--help') || args.includes('-h') || 
+            const isSetupMode = args.includes('--help') || args.includes('-h') ||
                                !(await this.checkVenvExists());
-            
+
             // Only show header during setup or help
             if (isSetupMode) {
                 this.log('🔍 MarkItDown MCP NPX Wrapper', true);
                 this.log('================================', true);
             }
-            
+
             // Handle --help quickly without setup
             if (args.includes('--help') || args.includes('-h')) {
                 this.log('MarkItDown MCP NPX Wrapper', true);
@@ -303,10 +329,10 @@ class MarkItDownMCPRunner {
                 this.log('  markitdown-mcp-npx --http --host 0.0.0.0 --port 8080  # Custom host/port', true);
                 return;
             }
-            
+
             // Check if virtual environment exists and is ready
             const venvReady = await this.checkVenvExists();
-            
+
             if (!venvReady) {
                 this.log('⚙️  Setting up MarkItDown MCP environment...', true);
                 await this.createVenv();
@@ -316,13 +342,13 @@ class MarkItDownMCPRunner {
             } else {
                 this.log('✓ Environment already set up');
             }
-            
+
             // Check for optional system dependencies
             this.checkOptionalDependencies();
-            
+
             // Run markitdown-mcp
             await this.runMarkItDown(args);
-            
+
         } catch (error) {
             this.logError(`❌ Error: ${error.message}`, true);
             this.logError('', true);

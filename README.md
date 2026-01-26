@@ -21,8 +21,10 @@ This package provides an NPX-compatible wrapper for Microsoft's [markitdown-mcp]
 
 ### Required
 - **Node.js 16+**: Required for NPX execution
-- **Python 3.10+**: Required for MarkItDown functionality
+- **Python 3.10 - 3.13**: Required for MarkItDown functionality
 - **Internet Connection**: For initial package installation
+
+> ⚠️ **Important**: Python 3.14+ is not yet supported due to [onnxruntime dependency](https://github.com/microsoft/onnxruntime/issues/26309). Install Python 3.13 if you have 3.14+.
 
 ### Optional (for enhanced functionality)
 - **FFmpeg**: For audio file processing and transcription (.mp3, .wav files)
@@ -172,7 +174,7 @@ Options:
 
 1. **NPX Magic**: NPX automatically downloads and runs the latest version
 2. **Auto-confirmation**: The `-y` flag skips installation prompts for seamless startup
-3. **Environment Detection**: Automatically detects Python 3.10+ installation
+3. **Environment Detection**: Automatically detects compatible Python 3.10-3.13 installation
 4. **Virtual Environment**: Creates isolated Python environment in temp directory
 5. **Package Installation**: Installs `markitdown-mcp` and dependencies
 6. **Process Management**: Spawns and manages the Python MCP server process
@@ -224,9 +226,15 @@ Server appears to hang or timeout on startup
 
 ### Python Not Found
 ```
-Error: Python 3.10+ is required but not found
+Error: Python 3.10-3.13 is required but not found
 ```
-**Solution**: Install Python 3.10+ and ensure it's in your PATH
+**Solution**: Install Python 3.10-3.13 and ensure it's in your PATH
+
+> ⚠️ **Note**: Python 3.14+ is not yet supported due to [onnxruntime dependency](https://github.com/microsoft/onnxruntime/issues/26309). If you have Python 3.14+, install Python 3.13 alongside it:
+> - **Arch Linux**: `sudo pacman -S python313`
+> - **macOS**: `brew install python@3.13`
+> - **Ubuntu**: `apt-get install python3.13`
+> - **Windows**: Download from [python.org](https://www.python.org/downloads/)
 
 ### Permission Errors
 ```
