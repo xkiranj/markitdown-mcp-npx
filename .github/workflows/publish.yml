@@ -23,7 +23,26 @@ jobs:
       - name: Run tests
         run: npm test
         
+      - name: Check if version is already published
+        id: check-version
+        run: |
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          NPM_VERSION=$(npm view markitdown-mcp-npx version 2>/dev/null || echo "not-found")
+          
+          if [ "$PACKAGE_VERSION" = "$NPM_VERSION" ]; then
+            echo "Version $PACKAGE_VERSION is already published"
+            echo "skip-publish=true" >> $GITHUB_OUTPUT
+          else
+            echo "Version $PACKAGE_VERSION is new, will publish"
+            echo "skip-publish=false" >> $GITHUB_OUTPUT
+          fi
+        
       - name: Publish to NPM
+        if: steps.check-version.outputs.skip-publish == 'false'
         run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          
+      - name: Skip publishing (already exists)
+        if: steps.check-version.outputs.skip-publish == 'true'
+        run: echo "✅ Version already published to NPM, skipping publish step"
